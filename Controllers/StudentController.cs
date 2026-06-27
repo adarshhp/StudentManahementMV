@@ -268,22 +268,22 @@ public class StudentController : Controller
         {
             StudentId = student.StudentId,
             StudentCode = student.StudentCode,
-            FirstName = student.FirstName,
-            LastName = student.LastName,
+            FirstName = student.FirstName ?? string.Empty,
+            LastName = student.LastName ?? string.Empty,
             Age = student.Age,
             DateOfBirth = student.DateOfBirth,
-            Gender = student.Gender,
-            Email = student.Email,
-            Phone = student.Phone,
-            Address = student.Address,
-            Username = student.Username,
-            Password = student.Password,
+            Gender = student.Gender ?? string.Empty,
+            Email = student.Email ?? string.Empty,
+            Phone = student.Phone ?? string.Empty,
+            Address = student.Address ?? string.Empty,
+            Username = student.Username ?? string.Empty,
+            Password = student.Password ?? string.Empty,
             ProfileImagePath = student.ProfileImagePath,
             Qualifications = student.Qualifications
                 .Select(qualification => new QualificationViewModel
                 {
-                    CourseName = qualification.CourseName,
-                    University = qualification.University,
+                    CourseName = qualification.CourseName ?? string.Empty,
+                    University = qualification.University ?? string.Empty,
                     PassingYear = qualification.PassingYear,
                     Percentage = qualification.Percentage
                 })

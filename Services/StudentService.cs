@@ -73,6 +73,8 @@ public class StudentService : IStudentService
     {
         try
         {
+            ValidateStudentModel(model);
+
             string? profileImagePath = null;
 
             if (model.ProfilePhoto is not null)
@@ -103,6 +105,8 @@ public class StudentService : IStudentService
     {
         try
         {
+            ValidateStudentModel(model);
+
             Student? existingStudent = await _studentRepository.GetByIdAsync(model.StudentId);
 
             if (existingStudent is null)
@@ -117,16 +121,16 @@ public class StudentService : IStudentService
                 profileImagePath = await SaveProfileImageAsync(model.ProfilePhoto);
             }
 
-            existingStudent.FirstName = model.FirstName?.Trim();
-            existingStudent.LastName = model.LastName?.Trim();
+            existingStudent.FirstName = NormalizeRequired(model.FirstName);
+            existingStudent.LastName = NormalizeRequired(model.LastName);
             existingStudent.Age = model.Age;
             existingStudent.DateOfBirth = model.DateOfBirth;
-            existingStudent.Gender = model.Gender?.Trim();
-            existingStudent.Email = model.Email?.Trim();
-            existingStudent.Phone = model.Phone?.Trim();
-            existingStudent.Address = model.Address?.Trim();
-            existingStudent.Username = model.Username?.Trim();
-            existingStudent.Password = model.Password?.Trim();
+            existingStudent.Gender = NormalizeRequired(model.Gender);
+            existingStudent.Email = NormalizeRequired(model.Email);
+            existingStudent.Phone = NormalizeRequired(model.Phone);
+            existingStudent.Address = NormalizeRequired(model.Address);
+            existingStudent.Username = NormalizeRequired(model.Username);
+            existingStudent.Password = NormalizeRequired(model.Password);
             existingStudent.ProfileImagePath = profileImagePath;
             existingStudent.UpdatedDate = DateTime.UtcNow;
             existingStudent.IsDeleted = false;
@@ -227,16 +231,16 @@ public class StudentService : IStudentService
         {
             StudentId = model.StudentId,
             StudentCode = model.StudentCode,
-            FirstName = model.FirstName?.Trim(),
-            LastName = model.LastName?.Trim(),
+            FirstName = NormalizeRequired(model.FirstName),
+            LastName = NormalizeRequired(model.LastName),
             Age = model.Age,
             DateOfBirth = model.DateOfBirth,
-            Gender = model.Gender?.Trim(),
-            Email = model.Email?.Trim(),
-            Phone = model.Phone?.Trim(),
-            Address = model.Address?.Trim(),
-            Username = model.Username?.Trim(),
-            Password = model.Password?.Trim(),
+            Gender = NormalizeRequired(model.Gender),
+            Email = NormalizeRequired(model.Email),
+            Phone = NormalizeRequired(model.Phone),
+            Address = NormalizeRequired(model.Address),
+            Username = NormalizeRequired(model.Username),
+            Password = NormalizeRequired(model.Password),
             ProfileImagePath = model.ProfileImagePath,
             Qualifications = MapQualifications(model.Qualifications ?? new List<QualificationViewModel>()).ToList()
         };
@@ -248,11 +252,62 @@ public class StudentService : IStudentService
         {
             yield return new Qualification
             {
-                CourseName = qualification.CourseName?.Trim(),
-                University = qualification.University?.Trim(),
+                CourseName = NormalizeRequired(qualification.CourseName),
+                University = NormalizeRequired(qualification.University),
                 PassingYear = qualification.PassingYear,
                 Percentage = qualification.Percentage
             };
         }
+    }
+
+    private static void ValidateStudentModel(StudentRegistrationViewModel model)
+    {
+        EnsurePresent(model.FirstName, "First name");
+        EnsurePresent(model.LastName, "Last name");
+        EnsurePresent(model.Gender, "Gender");
+        EnsurePresent(model.Email, "Email");
+        EnsurePresent(model.Phone, "Phone");
+        EnsurePresent(model.Address, "Address");
+        EnsurePresent(model.Username, "Username");
+        EnsurePresent(model.Password, "Password");
+
+        if (!model.Age.HasValue)
+        {
+            throw new InvalidOperationException("Age is required.");
+        }
+
+        if (!model.DateOfBirth.HasValue)
+        {
+            throw new InvalidOperationException("Date of birth is required.");
+        }
+
+        foreach (QualificationViewModel qualification in model.Qualifications ?? new List<QualificationViewModel>())
+        {
+            EnsurePresent(qualification.CourseName, "Course name");
+            EnsurePresent(qualification.University, "University");
+
+            if (!qualification.PassingYear.HasValue)
+            {
+                throw new InvalidOperationException("Passing year is required.");
+            }
+
+            if (!qualification.Percentage.HasValue)
+            {
+                throw new InvalidOperationException("Percentage is required.");
+            }
+        }
+    }
+
+    private static void EnsurePresent(string? value, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"{fieldName} is required.");
+        }
+    }
+
+    private static string NormalizeRequired(string? value)
+    {
+        return value?.Trim() ?? string.Empty;
     }
 }
