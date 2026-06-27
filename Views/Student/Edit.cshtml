@@ -1,0 +1,198 @@
+@model AssignementProject.ViewModels.StudentRegistrationViewModel
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Edit Student</h1>
+        <p class="text-muted mb-0">Update student details, profile image, and qualifications.</p>
+    </div>
+    <a asp-controller="Student" asp-action="Index" class="btn btn-outline-secondary">
+        Back to List
+    </a>
+</div>
+
+<form asp-controller="Student" asp-action="Edit" method="post" enctype="multipart/form-data" id="studentForm" novalidate>
+    @Html.AntiForgeryToken()
+    <input asp-for="StudentId" type="hidden" />
+    <input asp-for="ProfileImagePath" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h2 class="h5 mb-0">Student Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="StudentCode" class="form-label"></label>
+                    <input asp-for="StudentCode" class="form-control" readonly />
+                    <span asp-validation-for="StudentCode" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Age" class="form-label"></label>
+                    <input asp-for="Age" class="form-control" min="1" max="120" />
+                    <span asp-validation-for="Age" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Gender" class="form-label"></label>
+                    <select asp-for="Gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ProfilePhoto" class="form-label"></label>
+                    <input asp-for="ProfilePhoto" class="form-control profile-photo-input" type="file" accept=".jpg,.jpeg,.png,.gif" />
+                    <span asp-validation-for="ProfilePhoto" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfileImagePath))
+                    {
+                        <img id="profileImagePreview" src="@Url.Content(Model.ProfileImagePath)" class="profile-preview" alt="Current profile image" />
+                    }
+                    else
+                    {
+                        <img id="profileImagePreview" class="profile-preview d-none" alt="Profile image preview" />
+                    }
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label"></label>
+                    <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Address" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h2 class="h5 mb-0">Login Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" autocomplete="username" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 class="h5 mb-0">Qualifications</h2>
+            <button type="button" class="btn btn-sm btn-primary" id="addQualification">
+                Add Qualification
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0" id="qualificationTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Course</th>
+                            <th>University</th>
+                            <th>Passing Year</th>
+                            <th>Percentage</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Qualifications is not null && Model.Qualifications.Any())
+                        {
+                            for (int i = 0; i < Model.Qualifications.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input asp-for="Qualifications[i].CourseName" class="form-control" />
+                                        <span asp-validation-for="Qualifications[i].CourseName" class="text-danger small"></span>
+                                    </td>
+                                    <td>
+                                        <input asp-for="Qualifications[i].University" class="form-control" />
+                                        <span asp-validation-for="Qualifications[i].University" class="text-danger small"></span>
+                                    </td>
+                                    <td>
+                                        <input asp-for="Qualifications[i].PassingYear" class="form-control" min="1950" max="2100" />
+                                        <span asp-validation-for="Qualifications[i].PassingYear" class="text-danger small"></span>
+                                    </td>
+                                    <td>
+                                        <input asp-for="Qualifications[i].Percentage" class="form-control" min="0" max="100" step="0.01" />
+                                        <span asp-validation-for="Qualifications[i].Percentage" class="text-danger small"></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-qualification">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a asp-controller="Student" asp-action="Index" class="btn btn-outline-secondary">
+            Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+            Update Student
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/student.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,43 @@
+# Build results
+bin/
+obj/
+artifacts/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET tooling
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+packages/
+
+# Logs and diagnostics
+*.log
+logs/
+*.dmp
+*.trace
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini

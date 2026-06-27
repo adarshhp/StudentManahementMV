@@ -1,0 +1,135 @@
+@model AssignementProject.Models.Student
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Student Details</h1>
+        <p class="text-muted mb-0">Complete student profile and qualification information.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Student" asp-action="Index" class="btn btn-outline-secondary">
+            Back
+        </a>
+        <a asp-controller="Student" asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-primary">
+            Edit
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfileImagePath))
+                {
+                    <img src="@Url.Content(Model.ProfileImagePath)" class="profile-details-image mb-3" alt="@Model.FullName" />
+                }
+                else
+                {
+                    <div class="profile-details-image d-flex align-items-center justify-content-center text-muted mx-auto mb-3">
+                        No Image
+                    </div>
+                }
+                <h2 class="h5 mb-1">@Model.FullName</h2>
+                <div class="text-muted">@Model.StudentCode</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Personal Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="text-muted small">First Name</div>
+                        <div class="fw-semibold">@Model.FirstName</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Last Name</div>
+                        <div class="fw-semibold">@Model.LastName</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-muted small">Age</div>
+                        <div class="fw-semibold">@Model.Age</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-muted small">Date Of Birth</div>
+                        <div class="fw-semibold">@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("dd MMM yyyy") : "Not provided")</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-muted small">Gender</div>
+                        <div class="fw-semibold">@Model.Gender</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Email</div>
+                        <div class="fw-semibold">@Model.Email</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Phone</div>
+                        <div class="fw-semibold">@Model.Phone</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="text-muted small">Address</div>
+                        <div class="fw-semibold">@(string.IsNullOrWhiteSpace(Model.Address) ? "Not provided" : Model.Address)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Username</div>
+                        <div class="fw-semibold">@Model.Username</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted small">Created Date</div>
+                        <div class="fw-semibold">@Model.CreatedDate.ToString("dd MMM yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-white">
+        <h2 class="h5 mb-0">Qualifications</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Course</th>
+                        <th>University</th>
+                        <th>Passing Year</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Qualifications is not null && Model.Qualifications.Any())
+                    {
+                        foreach (var qualification in Model.Qualifications)
+                        {
+                            <tr>
+                                <td>@qualification.CourseName</td>
+                                <td>@qualification.University</td>
+                                <td>@qualification.PassingYear</td>
+                                <td>@(qualification.Percentage.HasValue ? $"{qualification.Percentage.Value:0.##}%" : "Not provided")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                No qualifications added.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
